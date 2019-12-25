@@ -17,6 +17,13 @@ class Cell:
 class OrderKDelaunay:
     """Order-k Delaunay mosaic for a set of points up to a given order k.
 
+    The constructor takes a list of input points (with a point represented as
+    a list of its coordinates) and an order. The point set can be in
+    Euclidean space of any dimension. Upon construction, the order-k Delaunay
+    mosaics of the points set from order 1 up to the specified order are
+    computed. The result can be accessed via the public attributes of the
+    OrderKDelaunay instance.
+
     Public attributes:
         diagrams_vertices:
             List of vertex lists.

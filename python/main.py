@@ -1,6 +1,5 @@
 import numpy as np
 from orderk_delaunay import OrderKDelaunay
-import plotter
 from plotter import Plotter, Plotter2D, Plotter3D
 
 

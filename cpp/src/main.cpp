@@ -60,7 +60,7 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 int main(int argc, char** argv)
 {
     if (argc < 4) {
-        std::cout << "Usage: order infile outfile [order]" << std::endl;
+        std::cout << "Usage: ./orderk infile outfile order" << std::endl;
         std::cout << "infile: Text file with 3 space separated coordinates per line." << std::endl;
         std::cout << "outfile: Output filename." << std::endl;
         std::cout << "order: Order k up to which to compute order-k Delaunay mosaics." << std::endl;
