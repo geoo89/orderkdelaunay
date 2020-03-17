@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Georg Osang
+ * Copyright (c) 2019-2020 Georg Osang
  * Distributed under the MIT License, see LICENCE.md
  */
 
@@ -32,21 +32,6 @@ const std::vector<std::vector<int> >
     combinatorial_triplets {{0,1,2},{0,1,3},{0,2,3},{1,2,3}};
 
 
-// Make set of combinatorial vertices of the first-order Delaunay mosaic.
-// Each first-order vertex is a singleton set, containing one point index.
-std::vector<CVertex> compute_first_order_vertices(
-    const std::vector<Point>& bpoints) {
-  std::vector<CVertex> cvertices1;
-  for (int i = 0; i < bpoints.size(); ++i) {
-    CVertex cv;
-    cv.push_back(i);
-    cvertices1.push_back(cv);
-  }
-
-  return cvertices1;
-}
-
-
 /**
  * Constructor for Order-k Delaunay mosaics up to a given order.
  * 
@@ -55,7 +40,8 @@ std::vector<CVertex> compute_first_order_vertices(
  *    order: The order up to (excluding) which to compute the mosaics.
  */
 // TODO: Refactor into smaller methods.
-OrderKDelaunay_3::OrderKDelaunay_3(
+template<class K>
+OrderKDelaunay_3<K>::OrderKDelaunay_3(
     const std::vector<Point>& bpoints, int order) {
   for (auto const& p : bpoints) {
     squared_lengths.push_back(Vector(CGAL::ORIGIN, p).squared_length());
@@ -78,7 +64,7 @@ OrderKDelaunay_3::OrderKDelaunay_3(
   // Turn the output into two vectors: of Cells and ICells.
   std::vector<Cell> cells;
   std::vector<ICell> icells;
-  Reg_Tri::Finite_cells_iterator cit;
+  typename Reg_Tri::Finite_cells_iterator cit;
   for (cit = T.finite_cells_begin(); cit != T.finite_cells_end(); ++cit) {
     Cell cell;
     cell.k = 1;
@@ -187,7 +173,7 @@ OrderKDelaunay_3::OrderKDelaunay_3(
       // mean: will be the mean of the 3D coordinates.
       Vector mean = CGAL::NULL_VECTOR;
       // mean_sq_length: will be the mean of the 4-th coordinate (i.e. "height")
-      K::FT mean_sq_length = 0;
+      typename K::FT mean_sq_length = 0;
       for (auto const& pt: cv) {
         mean = mean + Vector(CGAL::ORIGIN, bpoints[pt]);
         mean_sq_length += squared_lengths[pt];
@@ -213,7 +199,7 @@ OrderKDelaunay_3::OrderKDelaunay_3(
     // Step 2.2.2: Get weighted Delaunay triangulation and indentify its
     // first-generation cell.
     Reg_Tri T(new_points.begin(), new_points.end());
-    Reg_Tri::Finite_cells_iterator cit;
+    typename Reg_Tri::Finite_cells_iterator cit;
     for (cit = T.finite_cells_begin(); cit != T.finite_cells_end(); ++cit) {
       // TODO: Use pointers here instead of copies?
       std::vector<CVertex> vertices;
@@ -264,21 +250,23 @@ OrderKDelaunay_3::OrderKDelaunay_3(
 
 }
 
-
-std::vector<CVertex> OrderKDelaunay_3::get_vertices(int order) {
+template<class K>
+std::vector<CVertex> OrderKDelaunay_3<K>::get_vertices(int order) {
   return diagrams_vertices[order-1];
 }
 
 
 // Each cell is a Cell struct.
-std::vector<Cell> OrderKDelaunay_3::get_cells(int order) {
+template<class K>
+std::vector<Cell> OrderKDelaunay_3<K>::get_cells(int order) {
   return diagrams_cells[order-1];
 }
 
 
 // Note: the triangulation is not always unique.
 // Each cell is a set of VIndices.
-std::vector<ICell> OrderKDelaunay_3::get_triangulated_cells(int order) {
+template<class K>
+std::vector<ICell> OrderKDelaunay_3<K>::get_triangulated_cells(int order) {
   return diagrams_simplices[order-1];
 }
 
@@ -291,8 +279,9 @@ std::vector<ICell> OrderKDelaunay_3::get_triangulated_cells(int order) {
 // list of cells is sorted lexicographically. Thus the canonical
 // representation is unique, and can be used to compare for equality
 // when testing the output.
+template<class K>
 std::vector<std::vector<std::vector<unsigned>>>
-    OrderKDelaunay_3::get_canonical_representation(int order) {
+    OrderKDelaunay_3<K>::get_canonical_representation(int order) {
   std::vector<std::vector<std::vector<unsigned>>> cells;
   for (const auto& cell : get_cells(order)) {
     std::vector<std::vector<unsigned>> cell_vertices;
@@ -313,4 +302,20 @@ std::vector<std::vector<std::vector<unsigned>>>
   }
   std::sort(cells.begin(), cells.end());
   return cells;
+}
+
+
+// Make set of combinatorial vertices of the first-order Delaunay mosaic.
+// Each first-order vertex is a singleton set, containing one point index.
+template<class K>
+std::vector<CVertex> OrderKDelaunay_3<K>::compute_first_order_vertices(
+    const std::vector<Point>& bpoints) {
+  std::vector<CVertex> cvertices1;
+  for (int i = 0; i < bpoints.size(); ++i) {
+    CVertex cv;
+    cv.push_back(i);
+    cvertices1.push_back(cv);
+  }
+
+  return cvertices1;
 }

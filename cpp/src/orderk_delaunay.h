@@ -1,9 +1,11 @@
 /*
- * Copyright (c) 2019 Georg Osang
+ * Copyright (c) 2019-2020 Georg Osang
  * Distributed under the MIT License, see LICENCE.md
  */
 
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#ifndef _ORDERK_DELAUNAY_H_
+#define _ORDERK_DELAUNAY_H_
+
 #include <CGAL/Regular_triangulation_3.h>
 #include <CGAL/Triangulation_vertex_base_with_info_3.h>
 #include <vector>
@@ -11,34 +13,6 @@
 // CGAL <4.10
 #include <CGAL/Regular_triangulation_euclidean_traits_3.h>
 #include <inttypes.h>   // for uint32_t
-
-// TODO: K should be a template parameter of the OrderKDelaunay class.
-typedef CGAL::Exact_predicates_exact_constructions_kernel                    K;
-
-typedef K::Point_3                                                       Point;
-typedef K::Vector_3                                                     Vector;
-
-// CGAL 4.10 breaks some backward compatibility.
-// This code is for CGAL <4.10, but replacing the typedefs below
-// should make to code compile for later CGAL versions.
-
-// If using CGAL <4.10:
-typedef CGAL::Regular_triangulation_euclidean_traits_3<K>               Traits;
-typedef CGAL::Triangulation_vertex_base_3<Traits>                        Vbase;
-typedef CGAL::Triangulation_vertex_base_with_info_3<unsigned, Traits,Vbase> Vb;
-typedef CGAL::Regular_triangulation_cell_base_3<Traits>                     Cb;
-typedef CGAL::Triangulation_data_structure_3<Vb,Cb>                        Tds;
-typedef CGAL::Regular_triangulation_3<Traits, Tds>                     Reg_Tri;
-typedef Traits::Weighted_point_3                                Weighted_point;
-
-// If using CGAL >=4.10:
-// typedef K::FT                                               Weight;
-// typedef K::Weighted_point_3                                 Weighted_point;
-// typedef CGAL::Regular_triangulation_vertex_base_3<K>        Vb0;
-// typedef CGAL::Triangulation_vertex_base_with_info_3<unsigned, K, Vb0> Vb;
-// typedef CGAL::Regular_triangulation_cell_base_3<K>          Cb;
-// typedef CGAL::Triangulation_data_structure_3<Vb,Cb>         Tds;
-// typedef CGAL::Regular_triangulation_3<K, Tds>               Reg_Tri;
 
 
 // point index
@@ -80,9 +54,35 @@ struct Cell {
 };
 
 
-// TODO: template<class K>
+template<class K>
 class OrderKDelaunay_3 {
   public:
+    typedef typename K::Point_3                                                       Point;
+    typedef typename K::Vector_3                                                     Vector;
+
+    // CGAL 4.10 breaks some backward compatibility.
+    // This code is for CGAL <4.10, but replacing the typedefs below
+    // should make to code compile for later CGAL versions.
+
+    // If using CGAL <4.10:
+    typedef typename CGAL::Regular_triangulation_euclidean_traits_3<K>               Traits;
+    typedef typename CGAL::Triangulation_vertex_base_3<Traits>                        Vbase;
+    typedef typename CGAL::Triangulation_vertex_base_with_info_3<unsigned, Traits,Vbase> Vb;
+    typedef typename CGAL::Regular_triangulation_cell_base_3<Traits>                     Cb;
+    typedef typename CGAL::Triangulation_data_structure_3<Vb,Cb>                        Tds;
+    typedef typename CGAL::Regular_triangulation_3<Traits, Tds>                     Reg_Tri;
+    typedef typename Traits::Weighted_point_3                                Weighted_point;
+
+    // If using CGAL >=4.10:
+    // typedef typename K::FT                                               Weight;
+    // typedef typename K::Weighted_point_3                                 Weighted_point;
+    // typedef typename CGAL::Regular_triangulation_vertex_base_3<K>        Vb0;
+    // typedef typename CGAL::Triangulation_vertex_base_with_info_3<unsigned, K, Vb0> Vb;
+    // typedef typename CGAL::Regular_triangulation_cell_base_3<K>          Cb;
+    // typedef typename CGAL::Triangulation_data_structure_3<Vb,Cb>         Tds;
+    // typedef typename CGAL::Regular_triangulation_3<K, Tds>               Reg_Tri;
+
+
     /**
      * Order-k Delaunay diagrams up to a given order.
      *
@@ -126,9 +126,18 @@ class OrderKDelaunay_3 {
     std::vector<std::vector<std::vector<PIndex>>>
         get_canonical_representation(int order);
   private:
+
+    // Make set of combinatorial vertices of the first-order Delaunay mosaic.
+    // Each first-order vertex is a singleton set, containing one point index.
+    std::vector<CVertex> compute_first_order_vertices(const std::vector<Point>& bpoints);
+
     std::vector<Point> bpoints;
-    std::vector<K::FT> squared_lengths;
+    std::vector<typename K::FT> squared_lengths;
     std::vector<std::vector<ICell> > diagrams_simplices;
     std::vector<std::vector<Cell> > diagrams_cells;
     std::vector<std::vector<CVertex> > diagrams_vertices;
 };
+
+#include "orderk_delaunay_impl.h"
+
+#endif // _ORDERK_DELAUNAY_H_

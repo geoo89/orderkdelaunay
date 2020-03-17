@@ -16,7 +16,7 @@ include(${CGAL_USE_FILE})
 
 if ( CGAL_FOUND )
 
-set(DEPENDENCIES src/orderk_delaunay.cpp)
+set(DEPENDENCIES  ) # no dependencies at this point
 
 add_executable(orderk src/main.cpp ${DEPENDENCIES})
 add_executable(tests src/tests.cpp ${DEPENDENCIES})

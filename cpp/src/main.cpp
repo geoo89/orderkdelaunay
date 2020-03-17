@@ -3,12 +3,17 @@
  * Distributed under the MIT License, see LICENCE.md
  */
 
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+
 #include "orderk_delaunay.h"
 
 #include <iostream>
 #include <fstream>
 #include <string>
 
+typedef CGAL::Exact_predicates_exact_constructions_kernel                    K;
+
+typedef OrderKDelaunay_3<K>::Point                                       Point;
 
 /*
  * Read points from a file and return a vector of points.
@@ -79,7 +84,7 @@ int main(int argc, char** argv)
 
     std::ofstream ofile(outfile.c_str());
 
-    auto orderkdelaunay = OrderKDelaunay_3(points, max_order+1);
+    auto orderkdelaunay = OrderKDelaunay_3<K>(points, max_order+1);
     for (int order = 1; order <= max_order; ++order) {
 
         auto vertices = orderkdelaunay.get_vertices(order);

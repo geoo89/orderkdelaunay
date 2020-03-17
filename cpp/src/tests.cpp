@@ -8,6 +8,13 @@
 #define CATCH_CONFIG_MAIN
 #include "catch2/catch.hpp"
 
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+
+
+typedef CGAL::Exact_predicates_exact_constructions_kernel                    K;
+
+typedef OrderKDelaunay_3<K>::Point                                       Point;
+
 
 TEST_CASE("Standard toy example", "[orderk_delaunay]") {
 
@@ -46,7 +53,7 @@ TEST_CASE("Standard toy example", "[orderk_delaunay]") {
         {{0, 1, 2, 3}, {0, 1, 2, 4}, {0, 1, 3, 4}, {1, 2, 3, 4}}
     };
 
-    auto orderkdelaunay = OrderKDelaunay_3(points, 4);
+    auto orderkdelaunay = OrderKDelaunay_3<K>(points, 4);
 
     auto o1del = orderkdelaunay.get_canonical_representation(1);
     REQUIRE(o1del == o1del_expected);
@@ -83,7 +90,7 @@ TEST_CASE("Minimal example with a single cell", "[orderk_delaunay]") {
         {{0, 1, 2}, {0, 1, 3}, {0, 2, 3}, {1, 2, 3}}
     };
 
-    auto orderkdelaunay = OrderKDelaunay_3(points, 3);
+    auto orderkdelaunay = OrderKDelaunay_3<K>(points, 3);
 
     auto o1del = orderkdelaunay.get_canonical_representation(1);
     REQUIRE(o1del == o1del_expected);
@@ -125,7 +132,7 @@ TEST_CASE("Non-convex cluster", "[orderk_delaunay]") {
         {{1, 2}, {2, 3}, {2, 4}, {2, 5}}
     };
 
-    auto orderkdelaunay = OrderKDelaunay_3(points, 2);
+    auto orderkdelaunay = OrderKDelaunay_3<K>(points, 2);
 
     auto o2del = orderkdelaunay.get_canonical_representation(2);
     REQUIRE(o2del == o2del_expected);
