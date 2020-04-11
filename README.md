@@ -9,6 +9,9 @@ specific to the 3-dimensional setting, uses the [CGAL](https://www.cgal.org/)
 library for Delaunay triangulations and exact arithmetics and includes
 some unit tests using [Catch2](https://github.com/catchorg/Catch2).
 
+**The C++ version has been superseded by a more versatile implementation
+available at https://github.com/geoo89/rhomboidtiling**
+
 ## Python version
 
 _Prerequisites:_ scipy, numpy, (matplotlib)
